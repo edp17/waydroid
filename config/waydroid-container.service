@@ -1,12 +1,10 @@
 [Unit]
-Description=Waydroid container
-After=graphical.target
+Description=Waydroid Container
 
 [Service]
-Type=simple
-Restart=no
 ExecStart=/usr/bin/waydroid container start
 ExecStop=/usr/bin/waydroid container stop
+ExecStopPost=/usr/bin/waydroid session stop
 
 [Install]
-WantedBy=graphical.target
+WantedBy=multi-user.target

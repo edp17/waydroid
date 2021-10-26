@@ -9,12 +9,10 @@ Source0:        %{name}-%{version}.tar.gz
 Patch0:         0001-disable-user-manager.patch
 
 BuildRequires:  systemd
-BuildRequires:  desktop-file-utils
 Requires:       lxc
 Requires:       dnsmasq
-Requires:       python3-gbinder
+Requires:       python3-gbinder-python
 Requires:       python3-gobject
-Requires:       waydroid-sensors
 
 %description
 Waydroid uses Linux namespaces (user, pid, uts, net, mount, ipc) to run a full Android system in a container and provide Android applications on any GNU/Linux-based platform.
@@ -52,8 +50,6 @@ install -D -m644 config/waydroid.conf %{buildroot}/etc/modules-load.d/waydroid.c
 install -D -m644 settings/waydroid.json %{buildroot}/usr/share/jolla-settings/entries/waydroid.json
 install -D -m644 settings/Waydroid.qml %{buildroot}/usr/share/waydroid/settings/Waydroid.qml
 
-desktop-file-install config/waydroid.desktop
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -61,6 +57,7 @@ rm -rf $RPM_BUILD_ROOT
 systemctl daemon-reload
 systemctl-user daemon-reload
 systemctl enable waydroid-container
+chmod 777 /home/waydroid
 
 %files
 %defattr(-,root,root,-)
@@ -77,4 +74,3 @@ systemctl enable waydroid-container
 %{_userunitdir}/waydroid-session.service
 %{_datadir}/jolla-settings/entries/waydroid.json
 %{_datadir}/waydroid/settings/Waydroid.qml
-%{_datadir}/applications/waydroid.desktop
