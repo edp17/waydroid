@@ -1,6 +1,6 @@
 Name:           waydroid
 Version:        1.2.0
-Release:        3
+Release:        4
 Summary:        Waydroid uses a container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 License:        GPLv3
 URL:            https://github.com/waydroid
@@ -13,6 +13,8 @@ Requires:       lxc
 Requires:       dnsmasq
 Requires:       python3-gbinder-python
 Requires:       python3-gobject
+Requires:       waydroid-sensors
+Requires:       waydroid-gbinder-config
 
 %description
 Waydroid uses Linux namespaces (user, pid, uts, net, mount, ipc) to run a full Android system in a container and provide Android applications on any GNU/Linux-based platform.
@@ -28,6 +30,24 @@ Requires: %{name} = %{version}
 %description settings
 Support for enabling Waydroid session as a systemd service and use of Waydroid through direct rendering on Sailfish composer.
 
+%package gbinder-config-hybris
+Summary: gbinder config for hybris ports
+Requires: %{name} = %{version}
+Provides: waydroid-gbinder-config
+Conflicts: waydroid-gbinder-config-mainline
+
+%description gbinder-config-hybris
+Provides the gbinder config required for waydroid based on typical hybris based ports
+
+%package gbinder-config-mainline
+Summary: gbinder config for mainline ports
+Requires: %{name} = %{version}
+Provides: waydroid-gbinder-config
+Conflicts: waydroid-gbinder-config-hybirs
+
+%description gbinder-config-mainline
+Provides the gbinder config required for waydroid based on mainline (native) kernel
+
 %prep
 %setup
 %patch0 -p1
@@ -41,7 +61,8 @@ ln -sf /home/waydroid %{buildroot}/var/lib/waydroid
 mkdir -p %{buildroot}/usr/bin
 ln -sf /opt/waydroid/waydroid.py %{buildroot}/usr/bin/waydroid
 
-install -D -m644 config/anbox.conf %{buildroot}/etc/gbinder.d/anbox.conf
+install -D -m644 config/anbox-hybris.conf %{buildroot}/etc/gbinder.d/anbox-hybris.conf
+install -D -m644 config/anbox-mainline.conf %{buildroot}/etc/gbinder.d/anbox-mainline.conf
 install -D -m644 config/waydroid-container.service %{buildroot}/%{_unitdir}/waydroid-container.service
 install -D -m644 config/waydroid-session.service %{buildroot}/%{_userunitdir}/waydroid-session.service
 install -D -m644 config/waydroid.conf %{buildroot}/etc/modules-load.d/waydroid.conf
@@ -64,7 +85,6 @@ chmod 777 /home/waydroid
 /opt/waydroid
 %attr(-, defaultuser, users)/home/waydroid
 %{_sharedstatedir}/waydroid
-%{_sysconfdir}/gbinder.d/anbox.conf
 %{_sysconfdir}/modules-load.d/waydroid.conf
 %{_bindir}/waydroid
 %{_unitdir}/waydroid-container.service
@@ -74,3 +94,12 @@ chmod 777 /home/waydroid
 %{_userunitdir}/waydroid-session.service
 %{_datadir}/jolla-settings/entries/waydroid.json
 %{_datadir}/waydroid/settings/Waydroid.qml
+%{_datadir}/applications/waydroid.desktop
+
+%files gbinder-config-hybris
+%defattr(-,root,root,-)
+%{_sysconfdir}/gbinder.d/anbox-hybris.conf
+
+%files gbinder-config-mainline
+%defattr(-,root,root,-)
+%{_sysconfdir}/gbinder.d/anbox-mainline.conf
