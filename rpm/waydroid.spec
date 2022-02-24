@@ -9,8 +9,6 @@ Source0:        %{name}-%{version}.tar.gz
 Source1:        anbox.conf
 Source2:        waydroid-container.service
 Source3:        waydroid.conf
-Source4:        waydroid.json
-##Source5:        Waydroid.qml
 
 BuildRequires:  systemd
 BuildRequires:  desktop-file-utils
@@ -43,10 +41,6 @@ install -D -m644 %{SOURCE1} %{buildroot}/etc/gbinder.d/anbox.conf
 install -D -m644 %{SOURCE2} %{buildroot}/%{_unitdir}/waydroid-container.service
 install -D -m644 %{SOURCE3} %{buildroot}/etc/modules-load.d/waydroid.conf
 
-#Settings files
-install -D -m644 %{SOURCE4} %{buildroot}/usr/share/jolla-settings/entries//waydroid.json
-#install -D -m644 %{SOURCE5} %{buildroot}/usr/share/waydroid/settings/Waydroid.qml
-
 %clean
 rm -rf $RPM_BUILD_ROOT
 
@@ -64,5 +58,3 @@ systemctl enable waydroid-container
 %{_sysconfdir}/modules-load.d/waydroid.conf
 %{_bindir}/waydroid
 %{_unitdir}/waydroid-container.service
-%{_datadir}/jolla-settings/entries/waydroid.json
-#%{_datadir}/waydroid/settings/Waydroid.qml
