@@ -12,7 +12,7 @@ Page {
 
 
     DBusInterface {
-        id: waydroidSessionService
+        id: waydroidContainerService
 
         bus: DBus.SessionBus
         service: "org.freedesktop.systemd1"
@@ -20,7 +20,7 @@ Page {
         signalsEnabled: true
 
         function updateProperties() {
-            var status = waydroidSessionService.getProperty("ActiveState")
+            var status = waydroidContainerService.getProperty("ActiveState")
             waydroidSystemdStatus.status = status
             if (path !== "") {
                 root.serviceRunning = status === "active"
@@ -42,15 +42,15 @@ Page {
 
         signal unitNew(string name)
         onUnitNew: {
-            if (name == "waydroid-session.service") {
+            if (name == "waydroid-container.service") {
                 pathUpdateTimer.start()
             }
         }
 
         signal unitRemoved(string name)
         onUnitRemoved: {
-            if (name == "waydroid-session.service") {
-                waydroidSessionService.path = ""
+            if (name == "waydroid-container.service") {
+                waydroidContainerService.path = ""
                 pathUpdateTimer.stop()
             }
         }
@@ -65,7 +65,7 @@ Page {
             updateAutostart()
         }
         function updateAutostart() {
-            manager.typedCall("GetUnitFileState", [{"type": "s", "value": "waydroid-session.service"}],
+            manager.typedCall("GetUnitFileState", [{"type": "s", "value": "waydroid-container.service"}],
                               function(state) {
                                   console.log(state)
                                   if (state !== "disabled" && state !== "invalid") {
@@ -87,7 +87,7 @@ Page {
         }
 
         function enableaydroidUnit() {
-            manager.typedCall( "EnableUnitFiles",[{"type":"as","value":["waydroid-session.service"]},
+            manager.typedCall( "EnableUnitFiles",[{"type":"as","value":["waydroid-container.service"]},
                                                   {"type":"b","value":false},
                                                   {"type":"b","value":false}],
                               function(carries_install_info,changes){
@@ -102,7 +102,7 @@ Page {
         }
 
         function disableWaydroidUnit() {
-            manager.typedCall( "DisableUnitFiles",[{"type":"as","value":["waydroid-session.service"]},
+            manager.typedCall( "DisableUnitFiles",[{"type":"as","value":["waydroid-container.service"]},
                                                    {"type":"b","value":false}],
                               function(changes){
                                   root.waydroidAutostart = false
@@ -115,11 +115,11 @@ Page {
         }
 
         function startWaydroidUnit() {
-            manager.typedCall( "StartUnit",[{"type":"s","value":"waydroid-session.service"},
+            manager.typedCall( "StartUnit",[{"type":"s","value":"waydroid-container.service"},
                                             {"type":"s","value":"fail"}],
                               function(job) {
                                   console.log("job started - ", job)
-                                  waydroidSessionService.updateProperties()
+                                  waydroidContainerService.updateProperties()
                                   runningUpdateTimer.start()
                               },
                               function() {
@@ -128,11 +128,11 @@ Page {
         }
 
         function stopWaydroidUnit() {
-            manager.typedCall( "StopUnit",[{"type":"s","value":"waydroid-session.service"},
+            manager.typedCall( "StopUnit",[{"type":"s","value":"waydroid-container.service"},
                                            {"type":"s","value":"replace"}],
                               function(job) {
                                   console.log("job stopped - ", job)
-                                  waydroidSessionService.updateProperties()
+                                  waydroidContainerService.updateProperties()
                               },
                               function() {
                                   console.log("job stopped failure")
@@ -140,10 +140,10 @@ Page {
         }
 
         function updatePath() {
-            manager.typedCall("GetUnit", [{ "type": "s", "value": "waydroid-session.service"}], function(unit) {
-                waydroidSessionService.path = unit
+            manager.typedCall("GetUnit", [{ "type": "s", "value": "waydroid-container.service"}], function(unit) {
+                waydroidContainerService.path = unit
             }, function() {
-                waydroidSessionService.path = ""
+                waydroidContainerService.path = ""
             })
         }
     }
@@ -154,7 +154,7 @@ Page {
         interval: 1000
         repeat: true
         onTriggered:{
-            waydroidSessionService.updateProperties()
+            waydroidContainerService.updateProperties()
         }
     }
 
@@ -181,7 +181,7 @@ Page {
 
             TextSwitch {
                 id: autostart
-                text: qsTr("Start Waydroid session on bootup")
+                text: qsTr("Start Waydroid Container on bootup")
                 description: qsTr("When this is off, you won't have access to android applications")
                 enabled: root.ready
                 automaticCheck: false
@@ -194,7 +194,7 @@ Page {
             Label {
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2*Theme.horizontalPageMargin
-                text: qsTr("Start/stop Waydroid session daemon.")
+                text: qsTr("Start/stop Waydroid Container daemon.")
                 wrapMode: Text.Wrap
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryHighlightColor
@@ -205,7 +205,7 @@ Page {
                 property string status: "invalid"
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2*Theme.horizontalPageMargin
-                text: qsTr("Waydroid session current status") + " - " + status
+                text: qsTr("Waydroid Container current status") + " - " + status
                 wrapMode: Text.Wrap
                 font.pixelSize: Theme.fontSizeExtraSmall
                 color: Theme.secondaryHighlightColor

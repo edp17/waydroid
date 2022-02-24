@@ -1,0 +1,10 @@
+[Unit]
+Description=Waydroid sensors
+Requires=lipstick.service
+After=lipstick.service
+
+[Service]
+ExecStart=/usr/local/bin/waydroid-sensord
+
+[Install]
+WantedBy=post-user-session.target

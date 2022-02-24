@@ -8,12 +8,12 @@ BuildArch:      noarch
 Source0:        %{name}-%{version}.tar.gz
 Source1:        anbox.conf
 Source2:        waydroid-container.service
-Source3:        waydroid-session.service
-Source4:        waydroid.conf
-Source5:        waydroid.json
-Source6:        Waydroid.qml
+Source3:        waydroid.conf
+Source4:        waydroid.json
+##Source5:        Waydroid.qml
 
 BuildRequires:  systemd
+BuildRequires:  desktop-file-utils
 Requires:       lxc
 Requires:       dnsmasq
 Requires:       python-gbinder-python
@@ -27,7 +27,8 @@ The Android system inside the container has direct access to any needed hardware
 The Android runtime environment ships with a minimal customized Android system image based on LineageOS. The image is currently based on Android 10.
 
 %prep
-%setup -q
+%setup
+%patch0 -p1
 
 %install
 mkdir -p %{buildroot}/opt/waydroid
@@ -40,12 +41,11 @@ ln -sf /opt/waydroid/waydroid.py %{buildroot}/usr/bin/waydroid
 
 install -D -m644 %{SOURCE1} %{buildroot}/etc/gbinder.d/anbox.conf
 install -D -m644 %{SOURCE2} %{buildroot}/%{_unitdir}/waydroid-container.service
-install -D -m644 %{SOURCE3} %{buildroot}/%{_userunitdir}/waydroid-session.service
-install -D -m644 %{SOURCE4} %{buildroot}/etc/modules-load.d/waydroid.conf
+install -D -m644 %{SOURCE3} %{buildroot}/etc/modules-load.d/waydroid.conf
 
 #Settings files
-install -D -m644 %{SOURCE5} %{buildroot}/usr/share/jolla-settings/entries//waydroid.json
-install -D -m644 %{SOURCE6} %{buildroot}/usr/share/waydroid/settings/Waydroid.qml
+install -D -m644 %{SOURCE4} %{buildroot}/usr/share/jolla-settings/entries//waydroid.json
+#install -D -m644 %{SOURCE5} %{buildroot}/usr/share/waydroid/settings/Waydroid.qml
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -54,7 +54,6 @@ rm -rf $RPM_BUILD_ROOT
 systemctl daemon-reload
 systemctl-user daemon-reload
 systemctl enable waydroid-container
-systemctl-user enable waydroid-session
 
 %files
 %defattr(-,root,root,-)
@@ -65,6 +64,5 @@ systemctl-user enable waydroid-session
 %{_sysconfdir}/modules-load.d/waydroid.conf
 %{_bindir}/waydroid
 %{_unitdir}/waydroid-container.service
-%{_userunitdir}/waydroid-session.service
 %{_datadir}/jolla-settings/entries/waydroid.json
-%{_datadir}/waydroid/settings/Waydroid.qml
+#%{_datadir}/waydroid/settings/Waydroid.qml
