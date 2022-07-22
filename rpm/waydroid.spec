@@ -4,7 +4,6 @@ Release:        4
 Summary:        Waydroid uses a container-based approach to boot a full Android system on a regular GNU/Linux system like Ubuntu.
 License:        GPLv3
 URL:            https://github.com/waydroid
-BuildArch:      noarch
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         0001-disable-user-manager.patch
 
@@ -63,8 +62,8 @@ ln -sf /opt/waydroid/waydroid.py %{buildroot}/usr/bin/waydroid
 
 install -D -m644 config/anbox-hybris.conf %{buildroot}/etc/gbinder.d/anbox-hybris.conf
 install -D -m644 config/anbox-mainline.conf %{buildroot}/etc/gbinder.d/anbox-mainline.conf
-install -D -m644 config/waydroid-container.service %{buildroot}/%{_unitdir}/waydroid-container.service
-install -D -m644 config/waydroid-session.service %{buildroot}/%{_userunitdir}/waydroid-session.service
+install -D -m644 config/waydroid-container.service %{buildroot}/usr/lib/systemd/system/waydroid-container.service
+install -D -m644 config/waydroid-session.service %{buildroot}/usr/lib/systemd/user/waydroid-session.service
 install -D -m644 config/waydroid.conf %{buildroot}/etc/modules-load.d/waydroid.conf
 
 # Settings files
@@ -94,7 +93,7 @@ chmod 777 /home/waydroid
 %{_userunitdir}/waydroid-session.service
 %{_datadir}/jolla-settings/entries/waydroid.json
 %{_datadir}/waydroid/settings/Waydroid.qml
-%{_datadir}/applications/waydroid.desktop
+#%{_datadir}/applications/waydroid.desktop
 
 %files gbinder-config-hybris
 %defattr(-,root,root,-)
